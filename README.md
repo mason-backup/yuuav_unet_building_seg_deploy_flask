@@ -1,4 +1,6 @@
 ### README
+![Image text](https://raw.githubusercontent.com/MeisonP/yuuav_building_seg_deploy_flask/master/Screenshot%202019-01-08%20at%205.43.29%20PM.png)
+
 1.
 maek sure the version of Tensorflow are >= 1.11.0
 
