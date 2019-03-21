@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="//cdn.staticfile.org/codemirror/5.40.2/codemirror.min.js"></script>
+    <link rel="shortcut icon" href="//static.runoob.com/images/favicon.ico" mce_href="//static.runoob.com/images/favicon.ico" type="image/x-icon" >
+	<link rel="stylesheet" href="//cdn.staticfile.org/codemirror/5.40.2/codemirror.min.css">
+	<script src="//cdn.staticfile.org/codemirror/5.40.2/mode/htmlmixed/htmlmixed.min.js"></script>
+	<script src="//cdn.staticfile.org/codemirror/5.40.2/mode/css/css.min.js"></script>
+	<script src="//cdn.staticfile.org/codemirror/5.40.2/mode/javascript/javascript.min.js"></script>
+	<script src="//cdn.staticfile.org/codemirror/5.40.2/mode/xml/xml.min.js"></script>
+	<script src="//cdn.staticfile.org/codemirror/5.40.2/addon/edit/closetag.min.js"></script>
+	<script src="//cdn.staticfile.org/codemirror/5.40.2/addon/edit/closebrackets.min.js"></script>
+
+    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+
+</head>
+
+
+<body>
+<style>
+body{min-height:300px;padding-top:90px;background: #f6f6f6;}
+p{ line-height:30px}
+</style>
+
+<nav class="navbar navbar-default navbar-fixed-top" style="background: #96b97d;">
+  <div class="container">
+    <div class="navbar-header logo"><h1 style="color: white">Mason_Peng</h1>
+    </div>
+  </div>
+</nav>
+<script type="text/javascript">
+
+    function validateForm() {
+        var x = document.forms["myForm"]["fname"].value;
+        if (x == null || x == "") {
+            alert("Please choose a image!");
+            return false;
+        }
+    }
+
+
+function updateButton(button) {
+  if (button.value === 'Click to Run') {
+    button.value = 'Click to Stop';
+  } else {
+    button.value = 'Click to Run';
+  }
+}
+
+function freeBtn(button){
+        button.disabled=false;
+}
+
+//upload
+$(function() {
+    $('#load').click(function() {
+        event.preventDefault();
+        var form_data = new FormData($('#uploadform')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/uploadImg',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            dataType: 'json'
+        }).done(function(data, textStatus, jqXHR){
+            console.log(data);
+            console.log(textStatus);
+            console.log(jqXHR);
+            console.log('Success!');
+            //$("#resultFilename").text(data['name']);
+            //$("#resultFilesize").text(data['size']);
+            var  url_upload = (data['filename'])
+            document.getElementById("ImgSrc").src = url_upload;
+            document.getElementById("run").disabled = false;
+        }).fail(function(data){
+            alert('error! fail to upload');
+        });
+    });
+});
+
+
+//predict
+$(function() {
+    $('#run').click(function() {
+        event.preventDefault();
+        document.getElementById("run").disabled = true;
+        $("#note").text('Recognizing...');
+        var form_data_ = new FormData($('#runform')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/predictImg',
+            data: form_data_,
+            timeout: 20000,
+            contentType: false,
+            processData: false,
+            dataType: 'json'
+        }).done(function(data){
+
+            var  url_rst = (data['filename'])
+            document.getElementById("ImgRst").src = url_rst;
+            $("#note").text('Done! and the Building area:  ' + data['area']+'%');
+        }).fail(function(data){
+            alert('error! fail to predict');
+            $("#note").text('Fail !');
+            document.getElementById("run").disabled = false;
+        });
+    });
+});
+
+</script>
+
+<div class="container" >
+    <div class="row">
+
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 style="color:gray">图像上传</h4><br/>
+                        <form id="uploadform" method="post" enctype="multipart/form-data">
+                            <input name="file" type="file"> <br/>
+
+                            <button id="load" type="button" class="btn" >Upload</button>
+                        </form>
+
+
+                </div>
+                    <div class="panel-body">
+                            <img id="ImgSrc" width=256 height="256"/>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 style="color:gray">识别结果</h4> <br/>
+                        <p>State:&nbsp;<span id="note" ></span></p>
+                        <form id="runform" method="post" enctype="multipart/form-data">
+                            <button id="run" type="button" class="btn btn-success" disabled="disabled">Click to Begin</button>
+                        </form>
+                </div>
+                <div class="panel-body">
+                    <img id="ImgRst" width=256 height="256" /></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+	<footer>
+        <div class="row">
+            <div class="col-sm-12">
+                <div style="text-align: center;">
+                       <hr>
+                    <p>Copyright © 2018 <a target="_blank" >maosn_peng</a></p>
+                 </div>
+            </div>
+        </div>
+	</footer>
+
+</body>
+</html>
